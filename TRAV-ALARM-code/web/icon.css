@@ -1,0 +1,21 @@
+.search-container {
+    display: flex; /* Arranges input field and button horizontally */
+    align-items: center; /* Centers the elements vertically */
+    margin-bottom: 20px; /* Space below the search bar */
+}
+
+#locationSearch {
+    padding: 10px; 
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    flex: 1; /* Input field grows to fill available space */
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007bff; /* Example button color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

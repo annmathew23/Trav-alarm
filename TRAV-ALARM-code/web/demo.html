@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Buttons</title>
+    <link rel="stylesheet" href="demos.css">
+</head>
+<body>
+    <div class="button-container">
+        <button class="nav-button" onclick="redirectTo('np.html')">GPS Alarm</button>
+        <button class="nav-button">Reminders</button>
+        <button class="nav-button">Pinned</button>
+        <button class="nav-button">Nearby</button>
+    </div>
+    <script>
+        function redirectTo(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>

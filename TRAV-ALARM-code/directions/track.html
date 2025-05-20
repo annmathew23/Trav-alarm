@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time User Location Tracking</title>
+    <style>
+        #map { 
+            height: 60vh; /* Set the map height to 60% of the viewport height */
+            width: 80%; /* Set the map width to 80% of the viewport width */
+            margin: 0 auto; /* Center the map horizontally */
+            border: 2px solid #ccc; /* Add a border around the map */
+            border-radius: 10px; /* Add border radius */
+        }
+        #location-info {
+            text-align: center; /* Center-align the location info */
+            margin-top: 20px; /* Add some space between the map and location info */
+        }
+        #search-form {
+            text-align: center; /* Center-align the search form */
+            margin-top: 20px; /* Add some space between the map and search form */
+        }
+        #search-input {
+            padding: 5px; /* Add padding to the search input field */
+            border-radius: 5px; /* Add border radius to the search input field */
+            border: 1px solid #ccc; /* Add border to the search input field */
+            margin-right: 5px; /* Add margin to the right of the search input field */
+        }
+        #search-button {
+            padding: 5px 10px; /* Add padding to the search button */
+            border-radius: 5px; /* Add border radius to the search button */
+            background-color: #007bff; /* Set background color of the search button */
+            color: #fff; /* Set text color of the search button */
+            border: none; /* Remove border of the search button */
+            cursor: pointer; /* Set cursor style to pointer for the search button */
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="location-info">
+        <p>Current Location: Latitude: <span id="current-lat"></span>, Longitude: <span id="current-lng"></span>, Place: <span id="current-place"></span></p>
+        <p>Destination: Latitude: <span id="dest-lat"></span>, Longitude: <span id="dest-lng"></span>, Place: <span id="dest-place"></span>, Distance: <span id="distance"></span> km</p>
+    </div>
+    <div id="search-form">
+        <input type="text" id="search-input" placeholder="Enter a place">
+        <button id="search-button">Search</button>
+    </div>
+    <script>
+        var map, currentMarker, destMarker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 0, lng: 0},
+                zoom: 2
+            });
+
+            currentMarker = new google.maps.marker.AdvancedMarkerElement({
+                map: map
+            });
+
+            destMarker = new google.maps.marker.AdvancedMarkerElement({
+                map: map
+            });
+        }
+
+        function updateMarkerAndCoordinates(marker, lat, lng) {
+            marker.setPosition({lat: lat, lng: lng});
+            return {lat: lat.toFixed(6), lng: lng.toFixed(6)};
+        }
+
+        function fetchPlace(lat, lng, elementId) {
+            var geocoder = new google.maps.Geocoder;
+            var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
+            geocoder.geocode({'location': latlng}, function(results, status) {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        document.getElementById(elementId).textContent = results[0].formatted_address;
+                    } else {
+                        console.error('No results found');
+                    }
+                } else {
+                    console.error('Geocoder failed due to: ' + status);
+                }
+            });
+        }
+
+        document.getElementById('search-button').addEventListener('click', function() {
+            var query = document.getElementById('search-input').value;
+            if (query.trim() !== '') {
+                var geocoder = new google.maps.Geocoder;
+                geocoder.geocode({'address': query}, function(results, status) {
+                    if (status === 'OK') {
+                        var lat = results[0].geometry.location.lat();
+                        var lng = results[0].geometry.location.lng();
+                        map.setCenter({lat: lat, lng: lng});
+                        map.setZoom(12);
+                        var destCoords = updateMarkerAndCoordinates(destMarker, lat, lng);
+                        fetchPlace(destCoords.lat, destCoords.lng, 'dest-place');
+                        document.getElementById('dest-lat').textContent = destCoords.lat;
+                        document.getElementById('dest-lng').textContent = destCoords.lng;
+                    } else {
+                        console.error('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
+            }
+        });
+
+        function trackUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(function (position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    map.setCenter({lat: lat, lng: lng});
+                    map.setZoom(12);
+                    var currentCoords = updateMarkerAndCoordinates(currentMarker, lat, lng);
+                    fetchPlace(lat, lng, 'current-place');
+                    document.getElementById('current-lat').textContent = currentCoords.lat;
+                    document.getElementById('current-lng').textContent = currentCoords.lng;
+                    console.log("Current Location:", lat, lng);
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        trackUserLocation();
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6WzA42A-YWWpP2YwGcFQlXsQjp0PzZkQ&libraries=places&callback=initMap" async defer></script>
+</body>
+</html>
