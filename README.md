@@ -21,4 +21,5 @@ Bootstrap
 Google Geolocation API (assumed from filenames) 
 
 📜 License
+
 This project is open-source and available under the MIT License.
