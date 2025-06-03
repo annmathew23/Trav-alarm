@@ -18,7 +18,7 @@ JavaScript
 
 Bootstrap
 
-Google Geolocation API (assumed from filenames) 
+Google Geolocation API
 
 📜 License
 
